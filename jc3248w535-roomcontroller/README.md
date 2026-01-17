@@ -1,40 +1,94 @@
-\# JC3248W535 Room Controller (ESPHome + LVGL)
+# ESPHome Panels (Uhae)
 
+Dieses Repository enthält ESPHome-Panel-Konfigurationen (YAMLs) für mehrere Touch-/Display-Panels, die über das ESPHome Dashboard geflasht und verwaltet werden.
 
+## Struktur
 
-Hardware:
+Repo-Root:
+- `panels/` (dieses Git-Repo)
 
-\- Guition JC3248W535EN / ESP32-S3
+Panel-Projekte liegen als Unterordner im Repo:
+- `jc3248w535-roomcontroller/`
+  - `jc3248w535-panel-01.yaml` (Panel-Konfiguration)
+  - `secrets.yaml.example` (Stub-Template für Secrets)
 
-\- Display: axs15231 (QSPI)
+Hinweis: Das ESPHome Dashboard wird auf dem Workspace `C:\projects\esphome` gestartet und nutzt dort Root-Stubs als Entry-Points.
 
-\- Touch: axs15231 (I2C)
+## Zentrale Secrets-Strategie (wichtig)
 
-\- Resolution: 480x320 (landscape), rotation 90
+Secrets werden **zentral außerhalb des Repos** gepflegt:
 
+- **Zentrale Secrets-Datei (lokal, NICHT im Repo):**
+  - `C:\projects\esphome\secrets.yaml`
 
+Im Panel-Ordner liegt **keine echte Secrets-Datei im Git**, sondern nur ein Template/Stub:
 
-Features:
+- `jc3248w535-roomcontroller/secrets.yaml.example`
 
-\- Top bar: Time + indoor temperature + humidity
+Inhalt:
 
-\- EVCC button: mode toggle + charge power (kW + bar 0..12kW)
+```yaml
+<<: !include ../../secrets.yaml
+```
 
-\- Kitchen cleaning button: input\_button.press
+### Warum so?
 
-\- 2 generic HA switches (LVGL buttons 3 and 4)
+ESPHome sucht standardmäßig `secrets.yaml` im gleichen Ordner wie die jeweilige YAML.  
+Damit sowohl **Root-Stubs** als auch direkte Projekt-YAMLs funktionieren, wird pro Projektordner eine lokale `secrets.yaml` verwendet, die auf die zentrale Datei weiterleitet – aber **diese lokale secrets.yaml bleibt untracked**.
 
+## Setup auf einem neuen Rechner
 
+1) Stelle sicher, dass die zentrale Datei existiert:
 
-Secrets:
+- `C:\projects\esphome\secrets.yaml`
 
-Create `secrets.yaml` based on `secrets.example.yaml`.
+2) Lege im Panel-Ordner die lokale Secrets-Datei an (untracked):
 
+- Kopiere das Template:
+  - `jc3248w535-roomcontroller/secrets.yaml.example`
+- nach:
+  - `jc3248w535-roomcontroller/secrets.yaml`
 
+3) Danach sollte `esphome config` ohne Secrets-Fehler laufen.
 
-Build:
+## Flash/OTA Workflow (empfohlen)
 
-python -m esphome compile ali-panel-01.yaml
+Für konsistente Builds und Uploads wird das Device über den **Root-Stub** im Workspace geflasht  
+(der Stub liegt unter `C:\projects\esphome` und ist im ESPHome Dashboard sichtbar).
+
+Beispiele:
+- Root-Stub (Workspace): `C:\projects\esphome\JC3248w535_panel_01.yaml`
+- Projekt-YAML (Repo): `C:\projects\esphome\panels\jc3248w535-roomcontroller\jc3248w535-panel-01.yaml`
+
+Empfohlen:
+- Install/OTA immer über den **Root-Stub** im Dashboard oder CLI starten.
+
+CLI Beispiel:
+
+```powershell
+esphome config "C:\projects\esphome\JC3248w535_panel_01.yaml"
+esphome upload "C:\projects\esphome\JC3248w535_panel_01.yaml" --device <IP>
+```
+
+## Git Hygiene / Sicherheit
+
+- `secrets.yaml` wird absichtlich nicht committet.
+- Es werden keine echten Passwörter, API-Keys oder OTA-Passwörter im Repo gespeichert.
+- `secrets.yaml.example` ist ein Stub-Template ohne geheime Inhalte.
+
+Optionaler Check (sollte keine echten Secrets im Repo finden):
+
+```powershell
+git grep -n "wifi_password|ota_password|api_key|password:" .
+```
+
+## Hinweise
+
+- Wenn ESPHome über fehlende Secrets meckert: prüfen, ob im jeweiligen Projektordner eine `secrets.yaml` existiert,
+  die auf `../../secrets.yaml` inkludiert.
+- Wenn OTA Auth fehlschlägt: meist OTA-Passwort-Mismatch (Firmware erwartet altes Passwort).
+  In dem Fall per USB neu flashen oder das alte OTA-Passwort rekonstruieren.
+
 
 
 
