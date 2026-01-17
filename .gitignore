@@ -1,0 +1,16 @@
+# ESPHome build artifacts
+.esphome/
+.pioenvs/
+.piolibdeps/
+
+# Local secrets
+secrets.yaml
+
+# Python venv / cache
+venv/
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db
