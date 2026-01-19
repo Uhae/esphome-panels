@@ -1,0 +1,55 @@
+﻿# ------------------------------------------------------------
+# Refresh Top-Bar regelmäßig + Boot-Refresh
+# ------------------------------------------------------------
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - delay: 2s
+      - script.execute: ui_refresh_topbar
+
+interval:
+  - interval: 30s
+    then:
+      - script.execute: ui_refresh_topbar
+
+# ------------------------------------------------------------
+# UI Refresh Script (Top-Bar + EVCC Label)
+# ------------------------------------------------------------
+script:
+  - id: ui_refresh_topbar
+    mode: queued
+    then:
+      # Uhrzeit
+      - lvgl.label.update:
+          id: lbl_time
+          text: !lambda |-
+            auto t = id(ha_time).now();
+            char buf[6];
+            snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
+            return std::string(buf);
+
+      # Temperatur
+      - lvgl.label.update:
+          id: lbl_temp
+          text: !lambda |-
+            if (!id(indoor_temp).has_state()) return std::string("--.-°C");
+            char buf[10];
+            snprintf(buf, sizeof(buf), "%.1f°C", id(indoor_temp).state);
+            return std::string(buf);
+
+      # Luftfeuchte
+      - lvgl.label.update:
+          id: lbl_hum
+          text: !lambda |-
+            if (!id(indoor_hum).has_state()) return std::string("--%");
+            char buf[8];
+            snprintf(buf, sizeof(buf), "%.0f%%", id(indoor_hum).state);
+            return std::string(buf);
+
+      # EVCC Mode Text
+      - lvgl.label.update:
+          id: lbl_evcc_mode
+          text: !lambda |-
+            if (!id(evcc_mode).has_state()) return std::string("--");
+            return id(evcc_mode).state;

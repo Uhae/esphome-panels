@@ -1,0 +1,53 @@
+﻿# ------------------------------------------------------------
+# Home Assistant Time + Data Sources
+# ------------------------------------------------------------
+time:
+  - platform: homeassistant
+    id: ha_time
+
+sensor:
+  - platform: homeassistant
+    id: indoor_temp
+    entity_id: sensor.weather_station_indoor_temperature
+
+  - platform: homeassistant
+    id: indoor_hum
+    entity_id: sensor.weather_station_indoor_humidity
+
+  - platform: homeassistant
+    id: charge_power
+    entity_id: sensor.evcc_openwb_charge_power
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_charge_kw
+            text: !lambda |-
+              // Robust: Sensor kann W oder kW liefern
+              float v = id(charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 12000) w = 12000;
+
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%.1f kW", w / 1000.0f);
+              return std::string(buf);
+
+        - lvgl.bar.update:
+            id: bar_charge
+            value: !lambda |-
+              float v = id(charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 12000) w = 12000;
+              return (int) w;
+
+text_sensor:
+  - platform: homeassistant
+    id: evcc_mode
+    entity_id: select.evcc_openwb_mode
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_evcc_mode
+            text: !lambda |-
+              return id(evcc_mode).state;

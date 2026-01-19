@@ -1,0 +1,44 @@
+﻿# LVGL ↔ Home Assistant Switches
+# Hinweis: Das jeweilige LVGL-Widget (btn_1..btn_8) muss in der aktiven UI existieren.
+# Du kannst Buttons in einem UI "nicht nutzen", aber sie sollten existieren.
+
+switch:
+  - platform: lvgl
+    widget: btn_1
+    name: "Panel Switch 1"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_2
+    name: "Panel Switch 2"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_3
+    name: "Panel Switch 3"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_4
+    name: "Panel Switch 4"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_5
+    name: "Panel Switch 5"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_6
+    name: "Panel Switch 6"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_7
+    name: "Panel Switch 7"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_8
+    name: "Panel Switch 8"
+    restore_mode: RESTORE_DEFAULT_OFF

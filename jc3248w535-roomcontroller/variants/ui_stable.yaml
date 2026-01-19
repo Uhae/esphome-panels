@@ -1,0 +1,278 @@
+﻿font:
+  - file: "gfonts://Roboto"
+    id: font_big
+    size: 56
+    bpp: 4
+
+# ------------------------------------------------------------
+# LVGL UI – Room Controller V1 (Top-Bar + 4 Buttons)
+# ------------------------------------------------------------
+lvgl:
+  draw_rounding: 16
+  displays: my_display
+  touchscreens: my_touch
+
+  bg_color: 0xF2F3F5
+  border_width: 0
+  outline_width: 0
+
+  pages:
+    - id: main_page
+      layout:
+        type: grid
+        grid_columns: [235, 235]
+        grid_rows: [30, 130, 130]
+        grid_column_align: CENTER
+        grid_row_align: CENTER
+
+      widgets:
+        # TOP BAR
+        - obj:
+            id: top_bar
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 0
+            grid_cell_column_span: 2
+            grid_cell_x_align: STRETCH
+            grid_cell_y_align: STRETCH
+
+            bg_color: 0xF2F3F5
+            border_width: 0
+            pad_left: 12
+            pad_right: 12
+            pad_top: 8
+            pad_bottom: 8
+
+            layout:
+              type: FLEX
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+
+            widgets:
+              - label:
+                  id: lbl_time
+                  text: "--:--"
+                  text_color: 0x111827
+
+              - obj:
+                  bg_opa: TRANSP
+                  border_width: 0
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: END
+                    flex_align_cross: CENTER
+                    flex_align_track: CENTER
+                  widgets:
+                    - label:
+                        id: lbl_temp
+                        text: "--.-°C"
+                        text_color: 0x111827
+                    - label:
+                        id: lbl_hum
+                        text: "--%"
+                        text_color: 0x6B7280
+
+        # BUTTON 1: EVCC Mode Cycle
+        - button:
+            id: btn_1
+            checkable: true
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 200
+            height: 100
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: select.select_next
+                    data:
+                      entity_id: select.evcc_openwb_mode
+
+            widgets:
+              - label:
+                  text: "EVCC"
+                  align: TOP_MID
+                  y: 6
+                  text_color: 0x94A3B8
+
+              - obj:
+                  id: row_evcc
+                  align: CENTER
+                  y: -8
+                  width: 200
+                  height: 34
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_left: 8
+                  pad_right: 8
+                  scrollable: false
+                  scrollbar_mode: "OFF"
+                  clickable: false
+                  event_bubble: true
+
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: SPACE_BETWEEN
+                    flex_align_cross: CENTER
+                    flex_align_track: CENTER
+
+                  widgets:
+                    - label:
+                        id: lbl_evcc_mode
+                        text: "--"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+                    - label:
+                        id: lbl_charge_kw
+                        text: "--.- kW"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+              - bar:
+                  id: bar_charge
+                  align: BOTTOM_MID
+                  y: -14
+                  width: 190
+                  height: 16
+                  min_value: 0
+                  max_value: 12000
+                  value: 0
+                  bg_color: 0xE5E7EB
+                  indicator:
+                    bg_color: 0x3B82F6
+
+        # BUTTON 2: Küche Reinigung (Push)
+        - button:
+            id: btn_2
+            checkable: true
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 200
+            height: 100
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: input_button.press
+                    data:
+                      entity_id: input_button.reinigung_kuche
+
+            widgets:
+              - label:
+                  text: "Kueche"
+                  align: TOP_MID
+                  y: 18
+                  text_color: 0x94A3B8
+              - label:
+                  text: "Reinigung"
+                  align: CENTER
+                  text_color: 0xE2E8F0
+
+        # BUTTON 3: Generic Switch 3
+        - button:
+            id: btn_3
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 2
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 200
+            height: 100
+            radius: 24
+            checkable: true
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x1E40AF
+              border_color: 0x3B82F6
+            widgets:
+              - label:
+                  text: "1"
+                  align: CENTER
+                  text_color: 0xE2E8F0
+                  text_font: font_big
+
+        # BUTTON 4: Generic Switch 4
+        - button:
+            id: btn_4
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 2
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 200
+            height: 100
+            radius: 24
+            checkable: true
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x1E40AF
+              border_color: 0x3B82F6
+            widgets:
+              - label:
+                  text: "2"
+                  align: CENTER
+                  text_color: 0xE2E8F0
+                  text_font: font_big
+
+        # Reserve Buttons (btn_5..btn_8)
+        - button:
+            id: btn_5
+            checkable: true
+            align: TOP_LEFT
+            x: 0
+            y: 0
+            width: 1
+            height: 1
+            bg_opa: TRANSP
+            border_width: 0
+
+        - button:
+            id: btn_6
+            checkable: true
+            align: TOP_LEFT
+            x: 0
+            y: 0
+            width: 1
+            height: 1
+            bg_opa: TRANSP
+            border_width: 0
+
+        - button:
+            id: btn_7
+            checkable: true
+            align: TOP_LEFT
+            x: 0
+            y: 0
+            width: 1
+            height: 1
+            bg_opa: TRANSP
+            border_width: 0
+
+        - button:
+            id: btn_8
+            checkable: true
+            align: TOP_LEFT
+            x: 0
+            y: 0
+            width: 1
+            height: 1
+            bg_opa: TRANSP
+            border_width: 0

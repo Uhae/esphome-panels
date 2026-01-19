@@ -1,0 +1,12 @@
+﻿esphome:
+  name: jc3248w535-panel_01
+  friendly_name: jc3248w535-panel_01
+
+packages:
+  base: !include common/base.yaml
+  net: !include common/network.yaml
+  ha: !include common/ha_sources.yaml
+  hw: !include common/hw_display_touch.yaml
+  ui: !include variants/ui_stable.yaml
+  logic: !include common/ui_logic.yaml
+  lvgl_switches: !include common/ha_lvgl_switches.yaml

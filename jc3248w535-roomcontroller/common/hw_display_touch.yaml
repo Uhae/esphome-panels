@@ -1,0 +1,62 @@
+﻿# ------------------------------------------------------------
+# Display + Touch (working config)
+# ------------------------------------------------------------
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: 47
+  data_pins: [21, 48, 40, 39]
+
+i2c:
+  sda: 4
+  scl: 8
+  id: touchscreen_bus
+
+display:
+  - platform: qspi_dbi
+    model: axs15231
+    data_rate: 40MHz
+    id: my_display
+    spi_id: display_qspi
+    dimensions:
+      height: 480
+      width: 320
+    cs_pin: 45
+    rotation: 90
+    auto_clear_enabled: false
+
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: backlight
+
+light:
+  - platform: monochromatic
+    output: backlight
+    name: "backlight Light"
+    restore_mode: ALWAYS_ON
+
+touchscreen:
+  - platform: axs15231
+    id: my_touch
+    display: my_display
+    i2c_id: touchscreen_bus
+
+    # FIX nach ESPHome 2025.12.7 Update (bei dir bestätigt funktionierend)
+    transform:
+      swap_xy: true
+      mirror_x: false
+      mirror_y: true
+
+    calibration:
+      x_min: 14
+      x_max: 461
+      y_min: 12
+      y_max: 310
+
+    # Optional: Touch Debug
+    on_touch:
+      - logger.log:
+          level: DEBUG
+          format: "TOUCH: x=%d y=%d | RAW: rx=%d ry=%d"
+          args: ["touch.x", "touch.y", "touch.x_raw", "touch.y_raw"]
