@@ -66,10 +66,44 @@ lvgl:
                         id: lbl_temp
                         text: "--.-°C"
                         text_color: 0xE5E7EB
+
                     - label:
                         id: lbl_hum
                         text: "--%"
                         text_color: 0x9CA3AF
+
+                    # Reserve Buttons (btn_5..btn_8) – nur für HA Switches
+                    - button:
+                        id: btn_5
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_6
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_7
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_8
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
 
         # CARD 1: EVCC
         - button:
@@ -81,7 +115,7 @@ lvgl:
             height: 110
             radius: 26
             bg_color: 0x111827
-            bg_opa: 220
+            bg_opa: 85%
             border_width: 1
             border_color: 0x1F2937
             checked:
@@ -142,7 +176,7 @@ lvgl:
             height: 110
             radius: 26
             bg_color: 0x111827
-            bg_opa: 220
+            bg_opa: 85%
             border_width: 1
             border_color: 0x1F2937
             checked:
@@ -180,7 +214,7 @@ lvgl:
             height: 110
             radius: 26
             bg_color: 0x111827
-            bg_opa: 220
+            bg_opa: 85%
             border_width: 1
             border_color: 0x1F2937
             checked:
@@ -202,7 +236,7 @@ lvgl:
             height: 110
             radius: 26
             bg_color: 0x111827
-            bg_opa: 220
+            bg_opa: 85%
             border_width: 1
             border_color: 0x1F2937
             checked:
@@ -215,47 +249,3 @@ lvgl:
                   text_color: 0xE5E7EB
                   text_font: font_big
 
-        # Reserve Buttons (btn_5..btn_8)
-        - button:
-            id: btn_5
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_6
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_7
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_8
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0

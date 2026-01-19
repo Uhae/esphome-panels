@@ -6,6 +6,8 @@
 
 # ------------------------------------------------------------
 # LVGL UI – Room Controller V1 (Top-Bar + 4 Buttons)
+# Reserve Buttons (btn_5..btn_8) hängen in der Top-Bar rechts,
+# damit sie keine Grid-Zellen belegen.
 # ------------------------------------------------------------
 lvgl:
   draw_rounding: 16
@@ -26,7 +28,9 @@ lvgl:
         grid_row_align: CENTER
 
       widgets:
+        # -------------------------
         # TOP BAR
+        # -------------------------
         - obj:
             id: top_bar
             grid_cell_column_pos: 0
@@ -69,12 +73,48 @@ lvgl:
                         id: lbl_temp
                         text: "--.-°C"
                         text_color: 0x111827
+
                     - label:
                         id: lbl_hum
                         text: "--%"
                         text_color: 0x6B7280
 
+                    # Reserve Buttons (btn_5..btn_8) – nur für HA Switches
+                    - button:
+                        id: btn_5
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_6
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_7
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+                    - button:
+                        id: btn_8
+                        checkable: true
+                        width: 1
+                        height: 1
+                        bg_opa: TRANSP
+                        border_width: 0
+
+        # -------------------------
         # BUTTON 1: EVCC Mode Cycle
+        # -------------------------
         - button:
             id: btn_1
             checkable: true
@@ -151,7 +191,9 @@ lvgl:
                   indicator:
                     bg_color: 0x3B82F6
 
+        # -------------------------
         # BUTTON 2: Küche Reinigung (Push)
+        # -------------------------
         - button:
             id: btn_2
             checkable: true
@@ -184,7 +226,9 @@ lvgl:
                   align: CENTER
                   text_color: 0xE2E8F0
 
+        # -------------------------
         # BUTTON 3: Generic Switch 3
+        # -------------------------
         - button:
             id: btn_3
             grid_cell_column_pos: 0
@@ -208,7 +252,9 @@ lvgl:
                   text_color: 0xE2E8F0
                   text_font: font_big
 
+        # -------------------------
         # BUTTON 4: Generic Switch 4
+        # -------------------------
         - button:
             id: btn_4
             grid_cell_column_pos: 1
@@ -231,48 +277,3 @@ lvgl:
                   align: CENTER
                   text_color: 0xE2E8F0
                   text_font: font_big
-
-        # Reserve Buttons (btn_5..btn_8)
-        - button:
-            id: btn_5
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_6
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_7
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
-
-        - button:
-            id: btn_8
-            checkable: true
-            align: TOP_LEFT
-            x: 0
-            y: 0
-            width: 1
-            height: 1
-            bg_opa: TRANSP
-            border_width: 0
