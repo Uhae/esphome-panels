@@ -1,0 +1,94 @@
+# ------------------------------------------------------------
+# Home Assistant Time + Data Sources (MIPI variant)
+# ------------------------------------------------------------
+# Purpose:
+# - Keep stable/main behavior unchanged
+# - Add explicit LVGL label updates for top bar (time/temp/humidity)
+# - Keep existing EVCC widgets working (charge power, mode)
+# ------------------------------------------------------------
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# Update time label periodically (LVGL labels do not auto-bind)
+interval:
+  - interval: 30s
+    then:
+      - lvgl.label.update:
+          id: lbl_time
+          text: !lambda |-
+            auto t = id(ha_time).now();
+            if (!t.is_valid()) return std::string("--:--");
+            char buf[6];
+            snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
+            return std::string(buf);
+
+sensor:
+  # Indoor temperature (from HA) -> update top bar label
+  - platform: homeassistant
+    id: indoor_temp
+    entity_id: sensor.weather_station_indoor_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_temp
+            text: !lambda |-
+              if (!id(indoor_temp).has_state()) return std::string("--.-°C");
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%.1f°C", id(indoor_temp).state);
+              return std::string(buf);
+
+  # Indoor humidity (from HA) -> update top bar label
+  - platform: homeassistant
+    id: indoor_hum
+    entity_id: sensor.weather_station_indoor_humidity
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_hum
+            text: !lambda |-
+              if (!id(indoor_hum).has_state()) return std::string("--%");
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%.0f%%", id(indoor_hum).state);
+              return std::string(buf);
+
+  # EVCC charge power (from HA) -> update label + bar
+  - platform: homeassistant
+    id: charge_power
+    entity_id: sensor.evcc_openwb_charge_power
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_charge_kw
+            text: !lambda |-
+              // Robust: sensor may deliver W or kW
+              float v = id(charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 12000) w = 12000;
+
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%.1f kW", w / 1000.0f);
+              return std::string(buf);
+
+        - lvgl.bar.update:
+            id: bar_charge
+            value: !lambda |-
+              float v = id(charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 12000) w = 12000;
+              return (int) w;
+
+text_sensor:
+  # EVCC mode (from HA) -> update label
+  - platform: homeassistant
+    id: evcc_mode
+    entity_id: select.evcc_openwb_mode
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_evcc_mode
+            text: !lambda |-
+              return id(evcc_mode).state;

@@ -1,0 +1,23 @@
+# jc3248w535-panel-01-mipi-ryan.yaml
+#
+# Entry: Stable UI + Ryan-style mipi_spi hardware variant
+# Stable bleibt unverändert.
+
+substitutions:
+  device_ip: 192.168.2.171
+  hostname: jc3248w535-panel-01
+  friendly_name: JC Panel 01 (mipi_spi Ryan)
+
+esphome:
+  name: ${hostname}
+  friendly_name: ${friendly_name}
+
+logger:
+  level: INFO
+
+packages:
+  network: !include common/network.yaml
+  hw: !include variants/hw_mipi_spi_ryan.yaml
+  ui: !include variants/ui_stable.yaml
+  ha_sources: !include common/ha_sources_mipi.yaml
+  ha_lvgl_switches: !include common/ha_lvgl_switches.yaml

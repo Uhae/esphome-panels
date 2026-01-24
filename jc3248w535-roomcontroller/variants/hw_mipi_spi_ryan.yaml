@@ -1,0 +1,86 @@
+# variants/hw_mipi_spi_ryan.yaml
+#
+# JC3248W535EN - mipi_spi rendering (RyanEwen-style)
+# Safe defaults for stable LVGL rendering:
+# - ESP-IDF
+# - PSRAM octal @ 80MHz
+# - Quad SPI (QSPI)
+# - display: mipi_spi model preset JC3248W535
+# - data_rate 40MHz
+# - update_interval: never
+# - auto_clear_enabled: false
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+  
+psram:
+  mode: octal
+  speed: 80MHz
+
+# QSPI / Quad SPI bus (pins wie in deiner Stable / Ryan)
+spi:
+  - id: display_qspi
+    type: quad
+    clk_pin: 47
+    data_pins: [21, 48, 40, 39]
+
+# Touch I2C (wie Stable)
+i2c:
+  - id: touch_i2c
+    sda: 4
+    scl: 8
+    scan: false
+
+# Backlight PWM (wie Stable)
+output:
+  - platform: ledc
+    id: backlight_pwm
+    pin: 1
+    frequency: 2000 Hz
+
+light:
+  - platform: monochromatic
+    id: display_backlight
+    name: "JC Panel Backlight"
+    output: backlight_pwm
+    restore_mode: RESTORE_DEFAULT_ON
+
+# Display: mipi_spi (wichtig: kein dc_pin bei quad SPI)
+display:
+  - platform: mipi_spi
+    id: my_display
+    model: JC3248W535
+    rotation: 90
+    data_rate: 40MHz
+    update_interval: never
+    auto_clear_enabled: false
+
+    # Optional/robust: falls ESPHome cs_pin fordert oder dein Board es braucht
+    cs_pin:
+      number: 45
+      ignore_strapping_warning: true
+
+# Touch: exakt wie deine bewährte Stable-Kalibrierung
+touchscreen:
+  - platform: axs15231
+    id: my_touch
+    i2c_id: touch_i2c
+    display: my_display
+
+    transform:
+      swap_xy: true
+      mirror_x: false
+      mirror_y: true
+
+    calibration:
+      x_min: 14
+      x_max: 461
+      y_min: 12
+      y_max: 310
