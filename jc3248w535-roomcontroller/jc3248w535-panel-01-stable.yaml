@@ -1,6 +1,9 @@
-﻿esphome:
-  name: jc3248w535-panel_01
-  friendly_name: jc3248w535-panel_01
+﻿substitutions:
+  device_ip: "192.168.2.171"
+
+esphome:
+  name: jc3248w535-panel-01
+  friendly_name: jc3248w535-panel-01
 
 packages:
   base: !include common/base.yaml
