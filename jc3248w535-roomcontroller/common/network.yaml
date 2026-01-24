@@ -1,4 +1,4 @@
-﻿api:
+api:
   encryption:
     key: !secret JC3248W535EN_01_api_key
 

@@ -1,4 +1,4 @@
-﻿substitutions:
+substitutions:
   device_ip: "192.168.2.171"
 
 esphome:
