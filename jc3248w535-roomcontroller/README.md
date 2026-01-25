@@ -119,3 +119,91 @@ die auf ../../secrets.yaml inkludiert.
 
 Wenn OTA Auth fehlschlägt: meist OTA-Passwort-Mismatch (Firmware erwartet altes Passwort).
 In dem Fall per USB neu flashen oder das alte OTA-Passwort rekonstruiere
+
+======================================================================
+
+## Git Workflow (Stable vs Experiments)
+
+This repository is organized to keep **`main` always “known-good / flashable”**, while allowing safe experiments in short-lived branches.
+
+### Source of Truth vs Flash Stubs
+
+- **Source of Truth (tracked in Git):**
+  - `panels/jc3248w535-roomcontroller/`
+    - `common/` (shared blocks)
+    - `variants/` (UI + hardware variants)
+    - `jc3248w535-panel-01-*.yaml` (entry YAMLs used via packages/includes)
+
+- **Flash Stubs (NOT tracked in Git):**
+  - Located in the ESPHome workspace root (e.g. `C:\projects\esphome\jc-panel-01.yaml`)
+  - Purpose: keep the ESPHome Dashboard clean (only the currently active YAML is visible)
+  - Stubs typically include one tracked entry YAML, e.g.:
+    ```yaml
+    packages:
+      device: !include panels/jc3248w535-roomcontroller/jc3248w535-panel-01-stable.yaml
+    ```
+
+### Branching Strategy
+
+- **`main`**
+  - Always stable / flashable
+  - Contains the currently recommended configuration
+
+- **`exp/*`**
+  - Short-lived experimental branches (drivers, performance tuning, UI concepts)
+  - Example: `exp/mipi-spi-ryan`
+
+- **Optional feature branches**
+  - Used for longer UI work (e.g. `alt-ui-v2`)
+  - Kept only if active work continues
+
+### Release Tags (Known-Good States)
+
+We tag working milestones so we can always roll back quickly:
+
+- `jc-poc-v1` – initial PoC baseline
+- `jc-stable-v2` – stable OTA workflow improvements
+- `jc-mipi-v1` – stable MIPI-SPI solution (current baseline)
+
+### Typical Flow: Experiment → Stable
+
+1. Create an experiment branch from `main`
+   ```bash
+   git checkout main
+   git pull --ff-only
+   git checkout -b exp/<topic>
+Work and commit incrementally (small steps, test often)
+
+git add .
+git commit -m "..."
+Once verified on hardware, tag the known-good state
+
+git tag <tag-name>
+git push origin <tag-name>
+Fast-forward merge experiment into main
+
+git checkout main
+git pull --ff-only
+git merge --ff-only exp/<topic>
+git push
+Remove the experiment branch (optional cleanup)
+
+git push origin --delete exp/<topic>
+git branch -d exp/<topic>
+Hygiene Rules
+Never commit secrets:
+
+Only secrets.yaml.example is tracked
+
+secrets.yaml must stay local/untracked
+
+Never commit ESPHome build cache:
+
+.esphome/ is always local/untracked
+
+Keep entry YAMLs clean and reuse shared blocks:
+
+common/ for shared platform/network/api
+
+variants/ for UI + hardware-specific pieces
+
