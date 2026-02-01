@@ -1,0 +1,349 @@
+﻿# variants/ui_josi.yaml
+# Teenager-Style UI Experiment (UI only). Hardware remains stable/mipi_spi.
+
+globals:
+  - id: sync_from_ha
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+interval:
+  - interval: 30s
+    then:
+      - lvgl.label.update:
+          id: lbl_clock
+          text: !lambda |-
+            auto now = id(ha_time).now();
+            if (!now.is_valid()) return std::string("--:--");
+            char buf[6];
+            snprintf(buf, sizeof(buf), "%02d:%02d", now.hour, now.minute);
+            return std::string(buf);
+
+sensor:
+  - platform: homeassistant
+    id: outdoor_temp
+    entity_id: sensor.weather_station_indoor_outdoor_module_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_outdoor_temp
+            text: !lambda |-
+              if (!id(outdoor_temp).has_state()) return std::string("--.-°C");
+              char buf[10];
+              snprintf(buf, sizeof(buf), "%.1f°C", id(outdoor_temp).state);
+              return std::string(buf);
+
+
+lvgl:
+  bg_color: 0x0B1220
+  border_width: 0
+  outline_width: 0
+  scrollbar_mode: "OFF"
+
+  pages:
+    - id: main_page
+      layout:
+        type: grid
+        grid_columns: [468]
+        grid_rows: [56, 252]
+        pad_row: 12
+        pad_column: 0
+
+      widgets:
+        - obj:
+            id: topbar
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 0
+            width: 468
+            align: TOP_MID
+            height: 56
+            bg_color: 0x0F172A
+            bg_opa: 90%
+            radius: 18
+            pad_left: 18
+            pad_right: 18
+            pad_top: 10
+            pad_bottom: 10
+            scrollbar_mode: "OFF"
+
+            widgets:
+              - label:
+                  id: lbl_clock
+                  align: LEFT_MID
+                  text: "--:--"
+                  text_font: montserrat_32
+                  text_color: 0xE5E7EB
+
+              - label:
+                  id: lbl_outdoor_temp
+                  align: RIGHT_MID
+                  text: "--.-°C"
+                  text_font: montserrat_18
+                  text_color: 0x94A3B8
+
+
+        - obj:
+            id: button_row
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 1
+            width: 468
+            height: 252
+            bg_opa: TRANSP
+            scrollbar_mode: "OFF"
+
+            layout:
+              type: grid
+              grid_columns: [96, 96, 96, 96]
+              grid_rows: [96]
+              pad_column: 12
+              pad_row: 0
+              grid_column_align: CENTER
+              grid_row_align: CENTER
+
+            widgets:
+              - button:
+                  id: btn_j
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 0
+                  width: 96
+                  height: 96
+                  radius: 18
+                  checkable: true
+                  bg_color: 0x1F2937
+                  bg_opa: 100%
+                  checked:
+                    bg_color: 0x3B82F6
+
+                  widgets:
+                    - label:
+                        text: "J"
+                        align: CENTER
+                        text_font: montserrat_36
+                        text_color: 0xE5E7EB
+
+
+              - button:
+                  id: btn_o
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 0
+                  width: 96
+                  height: 96
+                  radius: 18
+                  checkable: true
+                  bg_color: 0x1F2937
+                  bg_opa: 100%
+                  checked:
+                    bg_color: 0x8B5CF6
+
+                  widgets:
+                    - label:
+                        text: "O"
+                        align: CENTER
+                        text_font: montserrat_36
+                        text_color: 0xE5E7EB
+
+
+              - button:
+                  id: btn_s
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 0
+                  width: 96
+                  height: 96
+                  radius: 18
+                  checkable: true
+                  bg_color: 0x1F2937
+                  bg_opa: 100%
+                  checked:
+                    bg_color: 0x14B8A6
+
+                  widgets:
+                    - label:
+                        text: "S"
+                        align: CENTER
+                        text_font: montserrat_36
+                        text_color: 0xE5E7EB
+
+
+              - button:
+                  id: btn_i
+                  grid_cell_column_pos: 3
+                  grid_cell_row_pos: 0
+                  width: 96
+                  height: 96
+                  radius: 18
+                  checkable: true
+                  bg_color: 0x1F2937
+                  bg_opa: 100%
+                  checked:
+                    bg_color: 0xF59E0B
+
+                  widgets:
+                    - label:
+                        text: "I"
+                        align: CENTER
+                        text_font: montserrat_36
+                        text_color: 0xE5E7EB
+
+
+switch:
+  - platform: lvgl
+    name: "JC J"
+    id: sw_j
+    widget: btn_j
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_on
+                data:
+                  entity_id: input_boolean.jc_j
+    on_turn_off:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_off
+                data:
+                  entity_id: input_boolean.jc_j
+
+  - platform: lvgl
+    name: "JC O"
+    id: sw_o
+    widget: btn_o
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_on
+                data:
+                  entity_id: input_boolean.jc_o
+    on_turn_off:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_off
+                data:
+                  entity_id: input_boolean.jc_o
+
+  - platform: lvgl
+    name: "JC S"
+    id: sw_s
+    widget: btn_s
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_on
+                data:
+                  entity_id: input_boolean.jc_s
+    on_turn_off:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_off
+                data:
+                  entity_id: input_boolean.jc_s
+
+  - platform: lvgl
+    name: "JC I"
+    id: sw_i
+    widget: btn_i
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_on
+                data:
+                  entity_id: input_boolean.jc_i
+    on_turn_off:
+      - if:
+          condition:
+            lambda: 'return !id(sync_from_ha);'
+          then:
+            - homeassistant.service:
+                service: input_boolean.turn_off
+                data:
+                  entity_id: input_boolean.jc_i
+
+
+binary_sensor:
+  - platform: homeassistant
+    id: ha_j
+    entity_id: input_boolean.jc_j
+    on_state:
+      then:
+        - lambda: 'id(sync_from_ha)=true;'
+        - if:
+            condition:
+              binary_sensor.is_on: ha_j
+            then:
+              - switch.turn_on: sw_j
+            else:
+              - switch.turn_off: sw_j
+        - lambda: 'id(sync_from_ha)=false;'
+
+  - platform: homeassistant
+    id: ha_o
+    entity_id: input_boolean.jc_o
+    on_state:
+      then:
+        - lambda: 'id(sync_from_ha)=true;'
+        - if:
+            condition:
+              binary_sensor.is_on: ha_o
+            then:
+              - switch.turn_on: sw_o
+            else:
+              - switch.turn_off: sw_o
+        - lambda: 'id(sync_from_ha)=false;'
+
+  - platform: homeassistant
+    id: ha_s
+    entity_id: input_boolean.jc_s
+    on_state:
+      then:
+        - lambda: 'id(sync_from_ha)=true;'
+        - if:
+            condition:
+              binary_sensor.is_on: ha_s
+            then:
+              - switch.turn_on: sw_s
+            else:
+              - switch.turn_off: sw_s
+        - lambda: 'id(sync_from_ha)=false;'
+
+  - platform: homeassistant
+    id: ha_i
+    entity_id: input_boolean.jc_i
+    on_state:
+      then:
+        - lambda: 'id(sync_from_ha)=true;'
+        - if:
+            condition:
+              binary_sensor.is_on: ha_i
+            then:
+              - switch.turn_on: sw_i
+            else:
+              - switch.turn_off: sw_i
+        - lambda: 'id(sync_from_ha)=false;'
