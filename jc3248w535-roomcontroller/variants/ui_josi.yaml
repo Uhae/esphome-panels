@@ -1,12 +1,6 @@
 ﻿# variants/ui_josi.yaml
 # Teenager-Style UI Experiment (UI only). Hardware remains stable/mipi_spi.
 
-globals:
-  - id: sync_from_ha
-    type: bool
-    restore_value: no
-    initial_value: "false"
-
 time:
   - platform: homeassistant
     id: ha_time
@@ -37,6 +31,54 @@ sensor:
               snprintf(buf, sizeof(buf), "%.1f°C", id(outdoor_temp).state);
               return std::string(buf);
 
+
+
+# Deterministic button state: subscribe to the *underlying HA entities* and
+# drive the LVGL "checked" state from their current HA state.
+#
+# NOTE:
+# - For J/O/S, replace the entity_id values with the actual HA entities you want to mirror.
+# - For I, this is already set to the light from your example automation.
+text_sensor:
+  - platform: homeassistant
+    id: ha_state_j
+    entity_id: input_boolean.jc_j  # TODO: set to the real underlying HA entity for J
+    on_value:
+      then:
+        - lvgl.widget.update:
+            id: btn_j
+            state:
+              checked: !lambda 'return x == "on";'
+
+  - platform: homeassistant
+    id: ha_state_o
+    entity_id: input_boolean.jc_o  # TODO: set to the real underlying HA entity for O
+    on_value:
+      then:
+        - lvgl.widget.update:
+            id: btn_o
+            state:
+              checked: !lambda 'return x == "on";'
+
+  - platform: homeassistant
+    id: ha_state_s
+    entity_id: input_boolean.jc_s  # TODO: set to the real underlying HA entity for S
+    on_value:
+      then:
+        - lvgl.widget.update:
+            id: btn_s
+            state:
+              checked: !lambda 'return x == "on";'
+
+  - platform: homeassistant
+    id: ha_state_i
+    entity_id: light.ikea_of_sweden_tradfri_bulb_e27_cws_globe_806lm_2
+    on_value:
+      then:
+        - lvgl.widget.update:
+            id: btn_i
+            state:
+              checked: !lambda 'return x == "on";'
 
 lvgl:
   bg_color: 0x0B1220
@@ -112,11 +154,15 @@ lvgl:
                   width: 96
                   height: 96
                   radius: 18
-                  checkable: true
+                  checkable: false
                   bg_color: 0x1F2937
                   bg_opa: 100%
                   checked:
                     bg_color: 0x3B82F6
+
+                  on_click:
+                    then:
+                      - switch.toggle: sw_j
 
                   widgets:
                     - label:
@@ -133,11 +179,15 @@ lvgl:
                   width: 96
                   height: 96
                   radius: 18
-                  checkable: true
+                  checkable: false
                   bg_color: 0x1F2937
                   bg_opa: 100%
                   checked:
                     bg_color: 0x8B5CF6
+
+                  on_click:
+                    then:
+                      - switch.toggle: sw_o
 
                   widgets:
                     - label:
@@ -154,11 +204,15 @@ lvgl:
                   width: 96
                   height: 96
                   radius: 18
-                  checkable: true
+                  checkable: false
                   bg_color: 0x1F2937
                   bg_opa: 100%
                   checked:
                     bg_color: 0x14B8A6
+
+                  on_click:
+                    then:
+                      - switch.toggle: sw_s
 
                   widgets:
                     - label:
@@ -175,11 +229,15 @@ lvgl:
                   width: 96
                   height: 96
                   radius: 18
-                  checkable: true
+                  checkable: false
                   bg_color: 0x1F2937
                   bg_opa: 100%
                   checked:
                     bg_color: 0xF59E0B
+
+                  on_click:
+                    then:
+                      - switch.toggle: sw_i
 
                   widgets:
                     - label:
@@ -189,161 +247,73 @@ lvgl:
                         text_color: 0xE5E7EB
 
 
+
 switch:
-  - platform: lvgl
+  # These switches exist mainly as "tap inputs" for Home Assistant automations.
+  # They are intentionally NOT bound to the LVGL widgets anymore, so the UI can
+  # reflect the *real device state* (via text_sensor above) without causing
+  # automation feedback loops.
+  - platform: template
     name: "JC J"
     id: sw_j
-    widget: btn_j
+    optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_on
-                data:
-                  entity_id: input_boolean.jc_j
-    on_turn_off:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_off
-                data:
-                  entity_id: input_boolean.jc_j
+    turn_on_action:
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.jc_j
+    turn_off_action:
+      - homeassistant.service:
+          service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.jc_j
 
-  - platform: lvgl
+  - platform: template
     name: "JC O"
     id: sw_o
-    widget: btn_o
+    optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_on
-                data:
-                  entity_id: input_boolean.jc_o
-    on_turn_off:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_off
-                data:
-                  entity_id: input_boolean.jc_o
+    turn_on_action:
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.jc_o
+    turn_off_action:
+      - homeassistant.service:
+          service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.jc_o
 
-  - platform: lvgl
+  - platform: template
     name: "JC S"
     id: sw_s
-    widget: btn_s
+    optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_on
-                data:
-                  entity_id: input_boolean.jc_s
-    on_turn_off:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_off
-                data:
-                  entity_id: input_boolean.jc_s
+    turn_on_action:
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.jc_s
+    turn_off_action:
+      - homeassistant.service:
+          service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.jc_s
 
-  - platform: lvgl
+  - platform: template
     name: "JC I"
     id: sw_i
-    widget: btn_i
+    optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_on
-                data:
-                  entity_id: input_boolean.jc_i
-    on_turn_off:
-      - if:
-          condition:
-            lambda: 'return !id(sync_from_ha);'
-          then:
-            - homeassistant.service:
-                service: input_boolean.turn_off
-                data:
-                  entity_id: input_boolean.jc_i
+    turn_on_action:
+      - homeassistant.service:
+          service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.jc_i
+    turn_off_action:
+      - homeassistant.service:
+          service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.jc_i
 
-
-binary_sensor:
-  - platform: homeassistant
-    id: ha_j
-    entity_id: input_boolean.jc_j
-    on_state:
-      then:
-        - lambda: 'id(sync_from_ha)=true;'
-        - if:
-            condition:
-              binary_sensor.is_on: ha_j
-            then:
-              - switch.turn_on: sw_j
-            else:
-              - switch.turn_off: sw_j
-        - lambda: 'id(sync_from_ha)=false;'
-
-  - platform: homeassistant
-    id: ha_o
-    entity_id: input_boolean.jc_o
-    on_state:
-      then:
-        - lambda: 'id(sync_from_ha)=true;'
-        - if:
-            condition:
-              binary_sensor.is_on: ha_o
-            then:
-              - switch.turn_on: sw_o
-            else:
-              - switch.turn_off: sw_o
-        - lambda: 'id(sync_from_ha)=false;'
-
-  - platform: homeassistant
-    id: ha_s
-    entity_id: input_boolean.jc_s
-    on_state:
-      then:
-        - lambda: 'id(sync_from_ha)=true;'
-        - if:
-            condition:
-              binary_sensor.is_on: ha_s
-            then:
-              - switch.turn_on: sw_s
-            else:
-              - switch.turn_off: sw_s
-        - lambda: 'id(sync_from_ha)=false;'
-
-  - platform: homeassistant
-    id: ha_i
-    entity_id: input_boolean.jc_i
-    on_state:
-      then:
-        - lambda: 'id(sync_from_ha)=true;'
-        - if:
-            condition:
-              binary_sensor.is_on: ha_i
-            then:
-              - switch.turn_on: sw_i
-            else:
-              - switch.turn_off: sw_i
-        - lambda: 'id(sync_from_ha)=false;'
