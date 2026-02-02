@@ -1,4 +1,4 @@
-﻿# variants/ui_josi.yaml
+# variants/ui_josi.yaml
 # Teenager-Style UI Experiment (UI only). Hardware remains stable/mipi_spi.
 
 time:
@@ -42,7 +42,7 @@ sensor:
 text_sensor:
   - platform: homeassistant
     id: ha_state_j
-    entity_id: input_boolean.jc_j  # TODO: set to the real underlying HA entity for J
+    entity_id: light.licht_josi
     on_value:
       then:
         - lvgl.widget.update:
@@ -52,7 +52,7 @@ text_sensor:
 
   - platform: homeassistant
     id: ha_state_o
-    entity_id: input_boolean.jc_o  # TODO: set to the real underlying HA entity for O
+    entity_id: light.led_josi
     on_value:
       then:
         - lvgl.widget.update:
@@ -62,7 +62,7 @@ text_sensor:
 
   - platform: homeassistant
     id: ha_state_s
-    entity_id: input_boolean.jc_s  # TODO: set to the real underlying HA entity for S
+    entity_id: light.ikea_of_sweden_tradfribulbe27wsglobeclear806lm
     on_value:
       then:
         - lvgl.widget.update:
