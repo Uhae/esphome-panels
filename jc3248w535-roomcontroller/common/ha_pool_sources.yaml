@@ -10,6 +10,47 @@ sensor:
             format: "%.2f"
             args: [ "x" ]
 
+      - if:
+          condition:
+            lambda: 'return x < 6.6f;'
+          then:
+            - lvgl.obj.update:
+                id: card_pool_ph
+                bg_color: 0x7F1D1D
+                border_color: 0xDC2626
+          else:
+            - if:
+                condition:
+                  lambda: 'return x < 7.2f;'
+                then:
+                  - lvgl.obj.update:
+                      id: card_pool_ph
+                      bg_color: 0x665500
+                      border_color: 0xFFEA00
+                else:
+                  - if:
+                      condition:
+                        lambda: 'return x <= 7.6f;'
+                      then:
+                        - lvgl.obj.update:
+                            id: card_pool_ph
+                            bg_color: 0x14532D
+                            border_color: 0x22C55E
+                      else:
+                        - if:
+                            condition:
+                              lambda: 'return x <= 8.4f;'
+                            then:
+                              - lvgl.obj.update:
+                                  id: card_pool_ph
+                                  bg_color: 0x665500
+                                  border_color: 0xFFEA00
+                            else:
+                              - lvgl.obj.update:
+                                  id: card_pool_ph
+                                  bg_color: 0x7F1D1D
+                                  border_color: 0xDC2626
+
   - platform: homeassistant
     id: pool_orp
     entity_id: sensor.sb66_orp
@@ -20,6 +61,47 @@ sensor:
           text:
             format: "%.0f mV"
             args: [ "x" ]
+
+      - if:
+          condition:
+            lambda: 'return x < 400.0f;'
+          then:
+            - lvgl.obj.update:
+                id: card_pool_orp
+                bg_color: 0x7F1D1D
+                border_color: 0xDC2626
+          else:
+            - if:
+                condition:
+                  lambda: 'return x < 650.0f;'
+                then:
+                  - lvgl.obj.update:
+                      id: card_pool_orp
+                      bg_color: 0x665500
+                      border_color: 0xFFEA00
+                else:
+                  - if:
+                      condition:
+                        lambda: 'return x <= 750.0f;'
+                      then:
+                        - lvgl.obj.update:
+                            id: card_pool_orp
+                            bg_color: 0x14532D
+                            border_color: 0x22C55E
+                      else:
+                        - if:
+                            condition:
+                              lambda: 'return x <= 900.0f;'
+                            then:
+                              - lvgl.obj.update:
+                                  id: card_pool_orp
+                                  bg_color: 0x665500
+                                  border_color: 0xFFEA00
+                            else:
+                              - lvgl.obj.update:
+                                  id: card_pool_orp
+                                  bg_color: 0x7F1D1D
+                                  border_color: 0xDC2626
 
   - platform: homeassistant
     id: pool_temp
@@ -32,6 +114,46 @@ sensor:
             format: "%.1f °C"
             args: [ "x" ]
 
+      - if:
+          condition:
+            lambda: 'return x < 18.0f;'
+          then:
+            - lvgl.obj.update:
+                id: card_pool_temp
+                bg_color: 0x7F1D1D
+                border_color: 0xDC2626
+          else:
+            - if:
+                condition:
+                  lambda: 'return x < 22.0f;'
+                then:
+                  - lvgl.obj.update:
+                      id: card_pool_temp
+                      bg_color: 0x665500
+                      border_color: 0xFFEA00
+                else:
+                  - if:
+                      condition:
+                        lambda: 'return x <= 33.0f;'
+                      then:
+                        - lvgl.obj.update:
+                            id: card_pool_temp
+                            bg_color: 0x14532D
+                            border_color: 0x22C55E
+                      else:
+                        - if:
+                            condition:
+                              lambda: 'return x <= 35.0f;'
+                            then:
+                              - lvgl.obj.update:
+                                  id: card_pool_temp
+                                  bg_color: 0x665500
+                                  border_color: 0xFFEA00
+                            else:
+                              - lvgl.obj.update:
+                                  id: card_pool_temp
+                                  bg_color: 0x7F1D1D
+                                  border_color: 0xDC2626
 switch:
   - platform: homeassistant
     id: sw_pool_circulation
