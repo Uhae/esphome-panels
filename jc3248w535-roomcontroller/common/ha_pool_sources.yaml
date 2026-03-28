@@ -1,0 +1,76 @@
+sensor:
+  - platform: homeassistant
+    id: pool_ph
+    entity_id: sensor.sb66_ph
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: lbl_pool_ph_value
+          text:
+            format: "%.2f"
+            args: [ "x" ]
+
+  - platform: homeassistant
+    id: pool_orp
+    entity_id: sensor.sb66_orp
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: lbl_pool_orp_value
+          text:
+            format: "%.0f mV"
+            args: [ "x" ]
+
+  - platform: homeassistant
+    id: pool_temp
+    entity_id: sensor.sb66_temperature
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: lbl_pool_temp_value
+          text:
+            format: "%.1f °C"
+            args: [ "x" ]
+
+switch:
+  - platform: homeassistant
+    id: sw_pool_circulation
+    entity_id: switch.shelly1pmg4_01_switch_0
+    internal: true
+    on_turn_on:
+      - lvgl.widget.update:
+          id: btn_pool_circulation
+          state:
+            checked: true
+      - lvgl.label.update:
+          id: lbl_pool_circulation_state
+          text: "ON"
+    on_turn_off:
+      - lvgl.widget.update:
+          id: btn_pool_circulation
+          state:
+            checked: false
+      - lvgl.label.update:
+          id: lbl_pool_circulation_state
+          text: "OFF"
+
+  - platform: homeassistant
+    id: sw_pool_heatpump
+    entity_id: switch.shelly1pmg4_02_switch_0
+    internal: true
+    on_turn_on:
+      - lvgl.widget.update:
+          id: btn_pool_heatpump
+          state:
+            checked: true
+      - lvgl.label.update:
+          id: lbl_pool_heatpump_state
+          text: "ON"
+    on_turn_off:
+      - lvgl.widget.update:
+          id: btn_pool_heatpump
+          state:
+            checked: false
+      - lvgl.label.update:
+          id: lbl_pool_heatpump_state
+          text: "OFF"

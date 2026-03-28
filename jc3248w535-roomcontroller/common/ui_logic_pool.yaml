@@ -1,0 +1,36 @@
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - delay: 2s
+      - script.execute: ui_refresh_topbar
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+interval:
+  - interval: 30s
+    then:
+      - script.execute: ui_refresh_topbar
+
+script:
+  - id: ui_refresh_topbar
+    mode: queued
+    then:
+      - lvgl.label.update:
+          id: lbl_time
+          text: !lambda |-
+            auto t = id(ha_time).now();
+            if (!t.is_valid()) return std::string("--:--");
+            char buf[6];
+            snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
+            return std::string(buf);
+
+      - lvgl.label.update:
+          id: lbl_temp
+          text: ""
+
+      - lvgl.label.update:
+          id: lbl_hum
+          text: ""
