@@ -153,9 +153,9 @@ lvgl:
 
             widgets:
               - label:
-                  text: "EVCC"
+                  text: "Wallbox"
                   align: TOP_MID
-                  y: 5
+                  y: 0
                   text_color: 0x94A3B8
 
               - obj:
@@ -222,22 +222,64 @@ lvgl:
             on_click:
               then:
                 - homeassistant.service:
-                    service: input_button.press
+                    service: select.select_next
                     data:
-                      entity_id: input_button.reinigung_kuche
+                      entity_id: select.evcc_carport_plug_mode
 
             widgets:
               - label:
-                  text: "Kueche"
+                  text: "Smart Charger"
                   align: TOP_MID
-                  y: 10
+                  y: 0
                   text_color: 0x94A3B8
 
-              - label:
-                  text: "Reinigung"
+              - obj:
+                  id: row_smart
                   align: CENTER
-                  y: 10
-                  text_color: 0xE2E8F0
+                  y: -5
+                  width: 194
+                  height: 28
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_left: 8
+                  pad_right: 8
+                  scrollable: false
+                  scrollbar_mode: "OFF"
+                  clickable: false
+                  event_bubble: true
+
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: SPACE_BETWEEN
+                    flex_align_cross: CENTER
+                    flex_align_track: CENTER
+
+                  widgets:
+                    - label:
+                        id: lbl_smart_mode
+                        text: "--"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+                    - label:
+                        id: lbl_smart_charge_kw
+                        text: "--.- kW"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+              - bar:
+                  id: bar_smart_charge
+                  align: BOTTOM_MID
+                  y: -8
+                  width: 184
+                  height: 10
+                  min_value: 0
+                  max_value: 2000
+                  value: 0
+                  bg_color: 0xE5E7EB
+                  indicator:
+                    bg_color: 0x3B82F6
 
         - button:
             id: btn_3

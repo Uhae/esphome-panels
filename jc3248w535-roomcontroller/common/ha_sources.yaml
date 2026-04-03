@@ -22,7 +22,6 @@ sensor:
         - lvgl.label.update:
             id: lbl_charge_kw
             text: !lambda |-
-              // Robust: Sensor kann W oder kW liefern
               float v = id(charge_power).state;
               float w = (v <= 20.0f) ? (v * 1000.0f) : v;
               if (w < 0) w = 0;
@@ -41,6 +40,32 @@ sensor:
               if (w > 12000) w = 12000;
               return (int) w;
 
+  - platform: homeassistant
+    id: smart_charge_power
+    entity_id: sensor.evcc_carport_plug_charge_power
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_smart_charge_kw
+            text: !lambda |-
+              float v = id(smart_charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 2000) w = 2000;
+
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%.1f kW", w / 1000.0f);
+              return std::string(buf);
+
+        - lvgl.bar.update:
+            id: bar_smart_charge
+            value: !lambda |-
+              float v = id(smart_charge_power).state;
+              float w = (v <= 20.0f) ? (v * 1000.0f) : v;
+              if (w < 0) w = 0;
+              if (w > 2000) w = 2000;
+              return (int) w;
+
 text_sensor:
   - platform: homeassistant
     id: evcc_mode
@@ -51,3 +76,13 @@ text_sensor:
             id: lbl_evcc_mode
             text: !lambda |-
               return id(evcc_mode).state;
+
+  - platform: homeassistant
+    id: smart_mode
+    entity_id: select.evcc_carport_plug_mode
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_smart_mode
+            text: !lambda |-
+              return id(smart_mode).state;
