@@ -1,0 +1,500 @@
+font:
+  - file: "gfonts://Roboto"
+    id: font_big
+    size: 56
+    bpp: 4
+
+  - file: "gfonts://Roboto"
+    id: font_value
+    size: 32
+    bpp: 4
+
+  - file: "gfonts://Roboto"
+    id: font_pool_temp
+    size: 44
+    bpp: 4
+
+lvgl:
+  draw_rounding: 16
+  displays: my_display
+  touchscreens: my_touch
+
+  bg_color: 0xF2F3F5
+  border_width: 0
+  outline_width: 0
+
+  top_layer:
+    widgets:
+      - obj:
+          id: footer_nav
+          align: BOTTOM_MID
+          width: 480
+          height: 36
+          bg_color: 0xF2F3F5
+          border_width: 0
+          pad_left: 0
+          pad_right: 0
+          pad_top: 2
+          pad_bottom: 2
+          scrollable: false
+          scrollbar_mode: "OFF"
+
+          layout:
+            type: FLEX
+            flex_flow: ROW
+            flex_align_main: CENTER
+            flex_align_cross: CENTER
+            flex_align_track: CENTER
+
+          widgets:
+            - button:
+                id: btn_page_next
+                width: 180
+                height: 30
+                radius: 14
+                bg_color: 0x172033
+                border_width: 1
+                border_color: 0x24324D
+                on_click:
+                  then:
+                    - lvgl.page.next:
+                        animation: MOVE_LEFT
+                        time: 200ms
+                widgets:
+                  - label:
+                      align: CENTER
+                      text: "Next Page"
+                      text_color: 0xE2E8F0
+
+  pages:
+    - id: page_stable
+      layout:
+        type: grid
+        grid_columns: [235, 235]
+        grid_rows: [22, 90, 90]
+        grid_column_align: CENTER
+        grid_row_align: START
+
+      widgets:
+        - obj:
+            id: top_bar_stable
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 0
+            grid_cell_column_span: 2
+            grid_cell_x_align: STRETCH
+            grid_cell_y_align: STRETCH
+            bg_color: 0xF2F3F5
+            border_width: 0
+            pad_left: 12
+            pad_right: 12
+            pad_top: 0
+            pad_bottom: 0
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            layout:
+              type: FLEX
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+
+            widgets:
+              - label:
+                  id: lbl_time_stable
+                  text: "--:--"
+                  text_color: 0x111827
+
+              - obj:
+                  width: 180
+                  height: 20
+                  bg_opa: TRANSP
+                  border_width: 0
+                  scrollable: false
+                  scrollbar_mode: "OFF"
+
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: END
+                    flex_align_cross: CENTER
+                    flex_align_track: CENTER
+
+                  widgets:
+                    - label:
+                        id: lbl_temp_stable
+                        text: "--.-°C"
+                        text_color: 0x111827
+
+                    - label:
+                        id: lbl_hum_stable
+                        text: "--%"
+                        text_color: 0x6B7280
+
+        - button:
+            id: btn_1
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 76
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: select.select_next
+                    data:
+                      entity_id: select.evcc_openwb_mode
+
+            widgets:
+              - label:
+                  text: "EVCC"
+                  align: TOP_MID
+                  y: 5
+                  text_color: 0x94A3B8
+
+              - obj:
+                  id: row_evcc
+                  align: CENTER
+                  y: -5
+                  width: 194
+                  height: 28
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_left: 8
+                  pad_right: 8
+                  scrollable: false
+                  scrollbar_mode: "OFF"
+                  clickable: false
+                  event_bubble: true
+
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: SPACE_BETWEEN
+                    flex_align_cross: CENTER
+                    flex_align_track: CENTER
+
+                  widgets:
+                    - label:
+                        id: lbl_evcc_mode
+                        text: "--"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+                    - label:
+                        id: lbl_charge_kw
+                        text: "--.- kW"
+                        text_color: 0xE2E8F0
+                        clickable: false
+
+              - bar:
+                  id: bar_charge
+                  align: BOTTOM_MID
+                  y: -8
+                  width: 184
+                  height: 10
+                  min_value: 0
+                  max_value: 12000
+                  value: 0
+                  bg_color: 0xE5E7EB
+                  indicator:
+                    bg_color: 0x3B82F6
+
+        - button:
+            id: btn_2
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 76
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: input_button.press
+                    data:
+                      entity_id: input_button.reinigung_kuche
+
+            widgets:
+              - label:
+                  text: "Kueche"
+                  align: TOP_MID
+                  y: 10
+                  text_color: 0x94A3B8
+
+              - label:
+                  text: "Reinigung"
+                  align: CENTER
+                  y: 10
+                  text_color: 0xE2E8F0
+
+        - button:
+            id: btn_3
+            checkable: true
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 2
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 76
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x1E40AF
+              border_color: 0x3B82F6
+
+            widgets:
+              - label:
+                  text: "1"
+                  align: CENTER
+                  text_color: 0xE2E8F0
+                  text_font: font_big
+
+        - button:
+            id: btn_4
+            checkable: true
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 2
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 76
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x1E40AF
+              border_color: 0x3B82F6
+
+            widgets:
+              - label:
+                  text: "2"
+                  align: CENTER
+                  text_color: 0xE2E8F0
+                  text_font: font_big
+
+    - id: page_pool
+      layout:
+        type: grid
+        grid_columns: [235, 235]
+        grid_rows: [22, 54, 54, 54]
+        grid_column_align: CENTER
+        grid_row_align: START
+
+      widgets:
+        - obj:
+            id: top_bar_pool
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 0
+            grid_cell_column_span: 2
+            grid_cell_x_align: STRETCH
+            grid_cell_y_align: STRETCH
+            bg_color: 0xF2F3F5
+            border_width: 0
+            pad_left: 12
+            pad_right: 12
+            pad_top: 0
+            pad_bottom: 0
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            layout:
+              type: FLEX
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+
+            widgets:
+              - label:
+                  id: lbl_time_pool
+                  text: "--:--"
+                  text_color: 0x111827
+
+              - label:
+                  text: "Pool"
+                  text_color: 0x6B7280
+
+        - obj:
+            id: card_pool_ph
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 198
+            height: 48
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            pad_top: 4
+            pad_bottom: 4
+            pad_left: 12
+            pad_right: 12
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            widgets:
+              - label:
+                  text: "pH"
+                  align: TOP_LEFT
+                  text_color: 0x94A3B8
+
+              - label:
+                  id: lbl_pool_ph_value
+                  text: "--.--"
+                  align: CENTER
+                  y: -2
+                  text_color: 0xE2E8F0
+                  text_font: font_value
+
+        - obj:
+            id: card_pool_orp
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 198
+            height: 48
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            pad_top: 4
+            pad_bottom: 4
+            pad_left: 12
+            pad_right: 12
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            widgets:
+              - label:
+                  text: "ORP"
+                  align: TOP_LEFT
+                  text_color: 0x94A3B8
+
+              - label:
+                  id: lbl_pool_orp_value
+                  text: "--- mV"
+                  align: CENTER
+                  y: -2
+                  text_color: 0xE2E8F0
+                  text_font: font_value
+
+        - obj:
+            id: card_pool_temp
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 2
+            grid_cell_column_span: 2
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 430
+            height: 48
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            pad_top: 4
+            pad_bottom: 4
+            pad_left: 12
+            pad_right: 12
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            widgets:
+              - label:
+                  text: "Temperature"
+                  align: TOP_LEFT
+                  text_color: 0x94A3B8
+
+              - label:
+                  id: lbl_pool_temp_value
+                  text: "--.- °C"
+                  align: CENTER
+                  y: 0
+                  text_color: 0xE2E8F0
+                  text_font: font_pool_temp
+
+        - button:
+            id: btn_pool_circulation
+            checkable: true
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 3
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 198
+            height: 48
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x166534
+              border_color: 0x22C55E
+
+            on_click:
+              then:
+                - switch.toggle: sw_pool_circulation
+
+            widgets:
+              - label:
+                  text: "Pumpe"
+                  align: TOP_MID
+                  y: -1
+                  text_color: 0x94A3B8
+
+              - label:
+                  id: lbl_pool_circulation_state
+                  text: "OFF"
+                  align: BOTTOM_MID
+                  y: 1
+                  text_color: 0xE2E8F0
+
+        - button:
+            id: btn_pool_heatpump
+            checkable: true
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 3
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 198
+            height: 48
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+            checked:
+              bg_color: 0x166534
+              border_color: 0x22C55E
+
+            on_click:
+              then:
+                - switch.toggle: sw_pool_heatpump
+
+            widgets:
+              - label:
+                  text: "Heizung"
+                  align: TOP_MID
+                  y: -1
+                  text_color: 0x94A3B8
+
+              - label:
+                  id: lbl_pool_heatpump_state
+                  text: "OFF"
+                  align: BOTTOM_MID
+                  y: 1
+                  text_color: 0xE2E8F0

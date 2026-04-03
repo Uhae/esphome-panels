@@ -1,0 +1,10 @@
+switch:
+  - platform: lvgl
+    widget: btn_3
+    name: "Panel Switch 3"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: lvgl
+    widget: btn_4
+    name: "Panel Switch 4"
+    restore_mode: RESTORE_DEFAULT_OFF
