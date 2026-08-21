@@ -1,7 +1,7 @@
 sensor:
   - platform: homeassistant
     id: pool_ph
-    entity_id: sensor.sb66_ph
+    entity_id: sensor.00_a0_50_70_54_1e_ph
     internal: true
     on_value:
       - lvgl.label.update:
@@ -53,7 +53,7 @@ sensor:
 
   - platform: homeassistant
     id: pool_orp
-    entity_id: sensor.sb66_orp
+    entity_id: sensor.00_a0_50_70_54_1e_oxidation_reduction_potential
     internal: true
     on_value:
       - lvgl.label.update:
@@ -105,7 +105,7 @@ sensor:
 
   - platform: homeassistant
     id: pool_temp
-    entity_id: sensor.sb66_temperature
+    entity_id: sensor.00_a0_50_70_54_1e_temperature
     internal: true
     on_value:
       - lvgl.label.update:
