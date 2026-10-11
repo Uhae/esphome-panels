@@ -15,6 +15,7 @@ font:
     bpp: 4
 
 lvgl:
+  rotation: 90
   draw_rounding: 16
   displays: my_display
   touchscreens: my_touch
