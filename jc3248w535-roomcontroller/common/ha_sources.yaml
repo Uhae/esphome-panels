@@ -42,7 +42,7 @@ sensor:
 
   - platform: homeassistant
     id: smart_charge_power
-    entity_id: sensor.evcc_carport_plug_charge_power
+    entity_id: sensor.evcc_smart_charger_charge_power
     on_value:
       then:
         - lvgl.label.update:
@@ -79,7 +79,7 @@ text_sensor:
 
   - platform: homeassistant
     id: smart_mode
-    entity_id: select.evcc_carport_plug_mode
+    entity_id: select.evcc_smart_charger_mode
     on_value:
       then:
         - lvgl.label.update:
