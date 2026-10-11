@@ -22,7 +22,6 @@ display:
       height: 480
       width: 320
     cs_pin: 45
-    rotation: 90
     auto_clear_enabled: false
 
 output:
