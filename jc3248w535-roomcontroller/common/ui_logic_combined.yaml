@@ -32,6 +32,15 @@ script:
             snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
             return std::string(buf);
 
+- lvgl.label.update:
+          id: lbl_time_roborock
+          text: !lambda |-
+            auto t = id(ha_time).now();
+            if (!t.is_valid()) return std::string("--:--");
+            char buf[6];
+            snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
+            return std::string(buf);
+
       - lvgl.label.update:
           id: lbl_temp_stable
           text: !lambda |-
