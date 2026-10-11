@@ -1,0 +1,276 @@
+# JC3248W535 touch diagnostic, ESPHome 2026.9.0.
+# Isolated by design: NO Home Assistant source entities, switches,
+# controls, EVCC, Pool, Roborock, automations or HA service calls.
+# Do not merge this firmware into the production panel configuration.
+# Same device name/IP/API/OTA credentials as the real panel on purpose;
+# a separately authorized OTA replaces its dashboard temporarily.
+substitutions:
+  device_ip: "192.168.2.171"
+
+esphome:
+  name: jc3248w535-panel-01
+  friendly_name: "JC Panel Touch Diagnostic"
+
+packages:
+  base: !include common/base.yaml
+  net: !include common/network.yaml
+
+# Hardware copied from the already validated ESPHome 2026.9
+# rotation migration, intentionally retaining original touch settings.
+# ------------------------------------------------------------
+# Display + Touch (working config)
+# ------------------------------------------------------------
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: 47
+  data_pins: [21, 48, 40, 39]
+
+i2c:
+  sda: 4
+  scl: 8
+  id: touchscreen_bus
+
+display:
+  - platform: qspi_dbi
+    model: axs15231
+    data_rate: 40MHz
+    id: my_display
+    spi_id: display_qspi
+    dimensions:
+      height: 480
+      width: 320
+    cs_pin: 45
+    auto_clear_enabled: false
+
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: backlight
+
+light:
+  - platform: monochromatic
+    output: backlight
+    name: "backlight Light"
+    restore_mode: ALWAYS_ON
+
+touchscreen:
+  - platform: axs15231
+    id: my_touch
+    display: my_display
+    i2c_id: touchscreen_bus
+
+    # FIX nach ESPHome 2025.12.7 Update (bei dir bestätigt funktionierend)
+    transform:
+      swap_xy: true
+      mirror_x: false
+      mirror_y: true
+
+    calibration:
+      x_min: 14
+      x_max: 461
+      y_min: 12
+      y_max: 310
+
+
+    # Only local logging and visual feedback. NO Home Assistant commands.
+    on_touch:
+      - lambda: |-
+          ESP_LOGI("touch_diag", "TAP x=%d y=%d raw_x=%d raw_y=%d",
+                   touch.x, touch.y, touch.x_raw, touch.y_raw);
+      - lvgl.canvas.draw_rectangle:
+          id: diag_canvas
+          x: !lambda "return touch.x - 5;"
+          y: !lambda "return touch.y - 5;"
+          width: 11
+          height: 11
+          radius: 5
+          bg_color: 0xEF4444
+          border_width: 0
+      - lvgl.label.update:
+          id: diag_readout
+          text: !lambda |-
+            char buf[75];
+            snprintf(buf, sizeof(buf), "TOUCH x=%d y=%d   RAW %d,%d",
+                     touch.x, touch.y, touch.x_raw, touch.y_raw);
+            return std::string(buf);
+
+lvgl:
+  rotation: 90
+  displays: my_display
+  touchscreens: my_touch
+  draw_rounding: 16
+  bg_color: 0x0B1220
+  border_width: 0
+  on_boot:
+    - lvgl.canvas.fill:
+        id: diag_canvas
+        color: 0x0B1220
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 31
+        y: 46
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 53
+        y: 46
+        text: "1"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 231
+        y: 46
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 253
+        y: 46
+        text: "2"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 431
+        y: 46
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 453
+        y: 46
+        text: "3"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 31
+        y: 151
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 53
+        y: 151
+        text: "4"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 231
+        y: 151
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 253
+        y: 151
+        text: "5"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 431
+        y: 151
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 453
+        y: 151
+        text: "6"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 31
+        y: 256
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 53
+        y: 256
+        text: "7"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 231
+        y: 256
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 253
+        y: 256
+        text: "8"
+        max_width: 20
+        color: 0xF8FAFC
+    - lvgl.canvas.draw_rectangle:
+        id: diag_canvas
+        x: 431
+        y: 256
+        width: 19
+        height: 19
+        radius: 9
+        bg_color: 0x38BDF8
+        border_width: 0
+    - lvgl.canvas.draw_text:
+        id: diag_canvas
+        x: 453
+        y: 256
+        text: "9"
+        max_width: 20
+        color: 0xF8FAFC
+  pages:
+    - id: page_touch_diagnostic
+      widgets:
+        - canvas:
+            id: diag_canvas
+            align: CENTER
+            width: 480
+            height: 320
+            transparent: false
+        - label:
+            align: TOP_MID
+            id: diag_readout
+            y: 4
+            text: "TOUCH DIAGNOSTIC: tap 1 to 9"
+            text_color: 0xFFFFFF
+            bg_color: 0x0B1220
+            bg_opa: COVER
+        - label:
+            align: BOTTOM_MID
+            y: -1
+            text: "BLUE targets / RED reported points"
+            text_color: 0xFFFFFF
+            bg_color: 0x0B1220
+            bg_opa: COVER
