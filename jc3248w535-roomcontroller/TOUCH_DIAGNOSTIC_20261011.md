@@ -1,6 +1,6 @@
 # JC Panel touch coordinate diagnostic — 2026-10-11
 
-Status: **v1 physical measurement PASS (data collection only)**; **v2 is proposed, not yet ESPHome-validated, compiled, OTA-installed, or physically tested**. The original firmware ESPHome 2026.3.0 was rolled back successfully earlier. The isolated v1 diagnostic firmware ESPHome 2026.9.0 was later flashed with explicit owner authorization.
+Status: **v1 physical measurement PASS (data collection only)**; **v2 validated, compiled, OTA-installed with owner authorization, and 9-point coordinate test passed with minor edge deviations**. The original firmware ESPHome 2026.3.0 was rolled back successfully earlier. The isolated v1 diagnostic firmware ESPHome 2026.9.0 was later flashed with explicit owner authorization.
 
 ## Observed data
 
@@ -55,6 +55,30 @@ All calibrations must be nonnegative per ESPHome schema. A linear regression of 
 - Screen Y = `302.2 - 1.026 * v1_raw_y`, residual RMSE ~9.0 px
 
 The native normalized calibration cannot reproduce both of these nonzero offsets exactly with permissible nonnegative lower bounds. Chosen x_max/y_max are a **first-pass constrained approximation**, not a proven final calibration. Predicted v2 error is up to ~27 px near left/bottom. Point 9 has a raw-y outlier compared with other bottom points. Re-measure after new test before any production dashboard update.
+
+## V2 hardware findings (11 Oct 2026, owner-confirmed)
+
+**PASS — diagnostic coordinate mapping on the physical display**, subject to mild edge offsets. V2 was reported validated and compiled on HA Yellow and installed via one separately owner-authorized OTA. Panel's V2 display markers match intended touches substantially better than V1. Isolated UI has no commands to HA actuators.
+
+| Point | Target x,y | V2 LVGL x,y | Distance |
+|---:|---|---|---:|
+| 1 | 40,55 | 23,53 | 17 px |
+| 2 | 240,55 | 248,58 | 9 px |
+| 3 | 440,55 | 443,55 | 3 px |
+| 4 | 40,160 | 37,166 | 7 px |
+| 5 | 240,160 | 236,170 | 11 px |
+| 6 | 440,160 | 454,168 | 16 px |
+| 7 | 40,265 | 50,257 | 13 px |
+| 8, initial | 240,265 | 251,297 | 34 px (user possibly slipped) |
+| 9, initial | 440,265 | 454,250 | 21 px (user possibly slipped) |
+| 8, repeat 1 | 240,265 | 246,272 | 9 px |
+| 9, repeat 1 | 440,265 | 454,284 | 24 px |
+| 8, repeat 2 | 240,265 | 242,268 | 4 px |
+| 9, repeat 2 | 440,265 | 454,275 | 17 px |
+
+Owner qualitative feedback: Point 8 well hit after repeats; Point 9 slightly right/down but acceptable. All distances are approximate finger-tap errors and do not isolate calibration from user positioning. The v2 configuration is **not yet validated with real LVGL click regions or the functional dashboard**.
+
+**Recommended next gate:** Prepare the corrected production-dashboard candidate on a separate branch using the v2 transform/calibration, retain `lvgl.rotation: 90`; review for any additional touch transforms. Compile only; next OTA requires separate owner authorization, and touch-testing actuator buttons warrants explicit safeguards. PR #2 remains a Draft with HARDWARE_TEST_FAIL until a full dashboard hardware test.
 
 ## Safety / governance
 
