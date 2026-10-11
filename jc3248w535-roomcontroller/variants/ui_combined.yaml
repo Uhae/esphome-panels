@@ -224,7 +224,7 @@ lvgl:
                 - homeassistant.service:
                     service: select.select_next
                     data:
-                      entity_id: select.evcc_carport_plug_mode
+                      entity_id: select.evcc_smart_charger_mode
 
             widgets:
               - label:
