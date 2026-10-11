@@ -540,3 +540,113 @@ lvgl:
                   align: BOTTOM_MID
                   y: 1
                   text_color: 0xE2E8F0
+
+    - id: page_roborock
+      layout:
+        type: grid
+        grid_columns: [235, 235]
+        grid_rows: [22, 125]
+        grid_column_align: CENTER
+        grid_row_align: START
+
+      widgets:
+        - obj:
+            id: top_bar_roborock
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 0
+            grid_cell_column_span: 2
+            grid_cell_x_align: STRETCH
+            grid_cell_y_align: STRETCH
+            bg_color: 0xF2F3F5
+            border_width: 0
+            pad_left: 12
+            pad_right: 12
+            pad_top: 0
+            pad_bottom: 0
+            scrollable: false
+            scrollbar_mode: "OFF"
+
+            layout:
+              type: FLEX
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+
+            widgets:
+              - label:
+                  id: lbl_time_roborock
+                  text: "--:--"
+                  text_color: 0x111827
+
+              - label:
+                  text: "Roborock"
+                  text_color: 0x6B7280
+
+        - button:
+            id: btn_roborock_kueche
+            grid_cell_column_pos: 0
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 96
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: button.press
+                    data:
+                      entity_id: button.saros_20_set_vacmopkuche
+
+            widgets:
+              - label:
+                  text: "VacMop"
+                  align: TOP_MID
+                  y: 8
+                  text_color: 0x94A3B8
+
+              - label:
+                  text: "Küche"
+                  align: CENTER
+                  y: 10
+                  text_color: 0xE2E8F0
+                  text_font: font_value
+
+        - button:
+            id: btn_roborock_ez
+            grid_cell_column_pos: 1
+            grid_cell_row_pos: 1
+            grid_cell_x_align: CENTER
+            grid_cell_y_align: CENTER
+            width: 196
+            height: 96
+            radius: 24
+            bg_color: 0x172033
+            border_width: 2
+            border_color: 0x24324D
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: button.press
+                    data:
+                      entity_id: button.saros_20_set_vacmopez
+
+            widgets:
+              - label:
+                  text: "VacMop"
+                  align: TOP_MID
+                  y: 8
+                  text_color: 0x94A3B8
+
+              - label:
+                  text: "EZ"
+                  align: CENTER
+                  y: 10
+                  text_color: 0xE2E8F0
+                  text_font: font_value
