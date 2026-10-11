@@ -22,7 +22,6 @@ display:
       height: 480
       width: 320
     cs_pin: 45
-    rotation: 90
     auto_clear_enabled: false
 
 output:
@@ -42,17 +41,18 @@ touchscreen:
     display: my_display
     i2c_id: touchscreen_bus
 
-    # FIX nach ESPHome 2025.12.7 Update (bei dir bestätigt funktionierend)
+    # ESPHome 2026.9.0: Hardware-tested with isolated Touch Diagnostic V2
+    # on 2026-10-11. Production UI still requires separate hardware acceptance.
     transform:
-      swap_xy: true
+      swap_xy: false
       mirror_x: false
-      mirror_y: true
+      mirror_y: false
 
     calibration:
-      x_min: 14
-      x_max: 461
-      y_min: 12
-      y_max: 310
+      x_min: 0
+      x_max: 287
+      y_min: 0
+      y_max: 487
 
     # Optional: Touch Debug
     on_touch:
