@@ -1,4 +1,6 @@
-# JC3248W535 touch diagnostic, ESPHome 2026.9.0.
+# JC3248W535 touch diagnostic v2 (experimental), ESPHome 2026.9.0.
+# Coordinate test only. The x/y calibration is provisional and requires
+# a physical 9-point re-test; do not use it to control Home Assistant devices.
 # Isolated by design: NO Home Assistant source entities, switches,
 # controls, EVCC, Pool, Roborock, automations or HA service calls.
 # Do not merge this firmware into the production panel configuration.
@@ -60,28 +62,36 @@ touchscreen:
     display: my_display
     i2c_id: touchscreen_bus
 
-    # FIX nach ESPHome 2025.12.7 Update (bei dir bestätigt funktionierend)
+    # 2026.9.0 provisional correction based on nine on-device raw taps.
+    # This firmware does NOT control any external devices.
+    # LVGL rotation=90 maps native driver (x,y) to (y,319-x).
+    # For this touchscreen, the previous swap_xy causes a second axis swap.
     transform:
-      swap_xy: true
+      swap_xy: false
       mirror_x: false
-      mirror_y: true
+      mirror_y: false
 
+    # Empirical first-pass; x_min/y_min cannot be negative in ESPHome.
+    # Expected remaining errors: up to ~27 px near left/bottom edges.
+    # Do NOT promote to dashboard until observed touch accuracy passes.
     calibration:
-      x_min: 14
-      x_max: 461
-      y_min: 12
-      y_max: 310
+      x_min: 0
+      x_max: 287
+      y_min: 0
+      y_max: 487
 
 
     # Only local logging and visual feedback. NO Home Assistant commands.
     on_touch:
       - lambda: |-
-          ESP_LOGI("touch_diag", "TAP x=%d y=%d raw_x=%d raw_y=%d",
-                   touch.x, touch.y, touch.x_raw, touch.y_raw);
+          ESP_LOGI("touch_diag", "TAP drv_x=%d drv_y=%d lvgl_x=%d lvgl_y=%d raw_x=%d raw_y=%d",
+                   touch.x, touch.y, touch.y, 319 - touch.x, touch.x_raw, touch.y_raw);
       - lvgl.canvas.draw_rectangle:
           id: diag_canvas
-          x: !lambda "return touch.x - 5;"
-          y: !lambda "return touch.y - 5;"
+          # Always draw at the coordinates actually passed to LVGL,
+          # NOT at touchscreen on_touch's pre-rotation driver coordinates.
+          x: !lambda "return touch.y > 5 ? touch.y - 5 : 0;"
+          y: !lambda "return touch.x < 314 ? 314 - touch.x : 0;"
           width: 11
           height: 11
           radius: 5
@@ -90,9 +100,10 @@ touchscreen:
       - lvgl.label.update:
           id: diag_readout
           text: !lambda |-
-            char buf[75];
-            snprintf(buf, sizeof(buf), "TOUCH x=%d y=%d   RAW %d,%d",
-                     touch.x, touch.y, touch.x_raw, touch.y_raw);
+            char buf[95];
+            snprintf(buf, sizeof(buf), "LVGL %d,%d | DRV %d,%d | RAW %d,%d",
+                     touch.y, 319 - touch.x, touch.x, touch.y,
+                     touch.x_raw, touch.y_raw);
             return std::string(buf);
 
 lvgl:
@@ -263,7 +274,7 @@ lvgl:
             align: TOP_MID
             id: diag_readout
             y: 4
-            text: "TOUCH DIAGNOSTIC: tap 1 to 9"
+            text: "TOUCH DIAG V2: tap 1 to 9"
             text_color: 0xFFFFFF
             bg_color: 0x0B1220
             bg_opa: COVER
